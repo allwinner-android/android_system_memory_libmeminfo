@@ -325,12 +325,14 @@ static void print_sysmeminfo(std::stringstream& ss, ::android::meminfo::SysMemIn
            << std::endl;
     }
 
+    uint64_t used = smi.mem_total_kb() - smi.mem_free_kb() - smi.mem_cached_kb() + (smi.mem_swap_kb() - smi.mem_swap_free_kb() - smi.mem_zram_kb()) - smi.mem_slab_reclaimable_kb();
     ss << ::android::base::StringPrintf(" RAM: %" PRIu64 "K total, %" PRIu64 "K free, %" PRIu64
                                         "K buffers, "
                                         "%" PRIu64 "K cached, %" PRIu64 "K shmem, %" PRIu64
-                                        "K slab",
+                                        "K slab, %" PRIu64 "M free+cached,",
                                         smi.mem_total_kb(), smi.mem_free_kb(), smi.mem_buffers_kb(),
-                                        smi.mem_cached_kb(), smi.mem_shmem_kb(), smi.mem_slab_kb());
+                                        smi.mem_cached_kb(), smi.mem_shmem_kb(), smi.mem_slab_kb(),(smi.mem_free_kb() + smi.mem_cached_kb())/1024);
+    ss << ::android::base::StringPrintf(" %" PRId64 " M used", used/1024);
 }
 
 int main(int argc, char* argv[]) {
